@@ -22,6 +22,10 @@ var geojsonFeature = {
         "coordinates": [-104.99404, 39.75621]
     }
 };
+//
+//
+// var marker = L.marker([51.5, -0.09]).addTo(mymap);
+// marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
 
 // geojason features are added through a layer and the layer is added to the map
 L.geoJSON(geojsonFeature).addTo(mymap);
@@ -34,9 +38,6 @@ var myLines = [{
     "type": "LineString",
     "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
 }];
-
-var myLayer = L.geoJSON().addTo(map);
-myLayer.addData(geojsonFeature);
 
 var myStyle = {
     "color": "#ff7800",
@@ -95,13 +96,15 @@ var geojsonMarkerOptions = {
     fillOpacity: 0.8
 };
 
-L.geoJSON(someGeojsonFeature, {
+// referenceing the marker variable above line13
+L.geoJSON(geojsonFeature, {
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, geojsonMarkerOptions);
     }
 }).addTo(mymap);
 
-
+// line below doesn't seem necessary
+// L.geoJSON(geojsonMarkerOptions).addTo(mymap);
 
 
 function onEachFeature(feature, layer) {
@@ -111,7 +114,9 @@ function onEachFeature(feature, layer) {
     }
 }
 
-var geojsonFeature = {
+
+// this is exactly what I have above. Is it necessary?
+var somegeojsonFeature = {
     "type": "Feature",
     "properties": {
         "name": "Coors Field",
@@ -124,10 +129,15 @@ var geojsonFeature = {
     }
 };
 
-L.geoJSON(geojsonFeature, {
+L.geoJSON(somegeojsonFeature).addTo(mymap);
+
+// this is not working
+L.geoJSON(somegeojsonFeature, {
     onEachFeature: onEachFeature
 }).addTo(mymap);
 
+
+// this is not working
 var someFeatures = [{
     "type": "Feature",
     "properties": {
@@ -155,7 +165,3 @@ L.geoJSON(someFeatures, {
         return feature.properties.show_on_map;
     }
 }).addTo(mymap);
-// L.geoJSON(myLines).addTo(mymap);
-// Alternatively, how to create an empty geojson layer assigned to the variable myLayer
-// var myLayer = L.geoJSON().addTo(map);
-// myLayer.addData(geojsonFeature);
