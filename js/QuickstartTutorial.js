@@ -10,7 +10,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
   maxZoom: 18,
   id: 'mapbox/streets-v11',
   accessToken: 'pk.eyJ1IjoiYWprcmFzaCIsImEiOiJjazZqc2Z4cXkwMHd5M2pwMXIwYjdhejZpIn0.So4cIqt5-aXZeRFRnqC6mg'
-  // the addto method, inherited from the L.tilelayer method, adds the tilelayer to my variable mymap
+  // the addTo method, inherited from the L.tilelayer method, adds the tilelayer to my variable mymap
 }).addTo(mymap);
 
 

@@ -1,7 +1,12 @@
 // Ashley Kuehl, GEOG 575, Activity 5 geojsonTutorial
 
+// initialize the map using the l.map method and the "mapid" div in my html document.
+// The additioanl chained on setView method contains an array with two coordinates where center is followed by the zoom leevl of 5
 var mymap = L.map('mapid').setView([39.75621, -104.99404], 5);
-//
+
+
+// the l.tileLayer method takes the parameters: a tileset URL and properties of the tilelayer.
+// the addTo method, inherited from the L.tilelayer method, adds the tilelayer to my variable mymap
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 18,
@@ -38,8 +43,10 @@ var myStyle = {
     "opacity": 0.65
 };
 
-// L.geoJSON method represents my geojson object myLines which contains linestring arrays, the myStyle variable is passed through to myLines
-// the addTo method adds myLines as a new layer to the map 
+
+// L.geoJSON method creates a geoJSON layer and passes through the myLines object which contains linestring arrays
+// the myStyle variable is passed through to myLines
+// the addTo method adds myLines as a new layer to the map
 L.geoJSON(myLines, {
     style: myStyle
 }).addTo(mymap);
@@ -73,6 +80,10 @@ var states = [{
     }
 }];
 
+
+// L.geoJSON method creates a geoJSON layer and passes through the states object which contains features with properties and geomentry of polygons which contain arrays for each feature
+// within the states ofject, party is selected within properties and a color is assigned to each individual party
+// the addTo method adds states as a new layer to the map
 L.geoJSON(states, {
     style: function(feature) {
         switch (feature.properties.party) {
@@ -81,6 +92,7 @@ L.geoJSON(states, {
         }
     }
 }).addTo(mymap);
+
 
 var geojsonMarkerOptions = {
     radius: 8,
@@ -91,34 +103,39 @@ var geojsonMarkerOptions = {
     fillOpacity: 0.8
 };
 
-// referenceing the marker variable above line13
+
+// L.geoJSON method creates a geoJSON layer and passes through the geojsonFeature object
+// the pointToLayer function passes through the gojsonFeature object and selects coordinates
+// the circleMarker method creates a circle marker at the selected coordinates and passes through the geojsonMarkerOptions, making an orange circle at the location
+// the addTo method adds the geojsonFeature object selection as a new layer to the map
 L.geoJSON(geojsonFeature, {
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, geojsonMarkerOptions);
     }
 }).addTo(mymap);
 
-// line below doesn't seem necessary
-// L.geoJSON(geojsonMarkerOptions).addTo(mymap);
 
-
+// the onEachFeature function is called for each created Feature. Seen below.
 function onEachFeature(feature, layer) {
-    // does this feature have a property named popupContent?
-
-
+// a conditional statement is created. If a feature has properties that contain popup html content, then the content will added to the map using a bindPopup method when the location is clicked
+// the popupContent is also logged to the console
     if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent);
         console.log(feature.properties.popupContent)
     }
 }
 
-// this is not working
-var test = L.geoJSON(geojsonFeature, {
+
+
+// L.geoJSON method creates a geoJSON layer and passes through the geojsonFeature object
+// the onEachFeature function is called and the conditional statement starts
+// the resulting condition is added to the map with the addTo method
+L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature,
 }).addTo(mymap);
 
 
-// this is not working
+// creation of a someFeatures object with type, properties, and geometry
 var someFeatures = [ {
     "type": "Feature",
     "properties": {
@@ -131,10 +148,12 @@ var someFeatures = [ {
     }
 }];
 
+
+// L.geoJSON method creates a geoJSON layer and passes through the someFeatures object
+// a filter function is used to return poperties show_on_map from someFeatures. However, it does not show up because show_on_map is false in the someFeatures object
+// the addTo method adds the someFeatures object and filtered selection as a new layer to the map
 L.geoJSON(someFeatures, {
     filter: function(feature, layer) {
         return feature.properties.show_on_map;
     }
 }).addTo(mymap);
-
-// everytime geoJSON is called it creates a new layer?
