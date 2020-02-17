@@ -22,14 +22,7 @@ var geojsonFeature = {
         "coordinates": [-104.99404, 39.75621]
     }
 };
-//
-//
-// var marker = L.marker([51.5, -0.09]).addTo(mymap);
-// marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
 
-// geojason features are added through a layer and the layer is added to the map
-L.geoJSON(geojsonFeature).addTo(mymap);
-//
 // how to pass geojson objects as an array
 var myLines = [{
     "type": "LineString",
@@ -45,6 +38,8 @@ var myStyle = {
     "opacity": 0.65
 };
 
+// L.geoJSON method represents my geojson object myLines which contains linestring arrays, the myStyle variable is passed through to myLines
+// the addTo method adds myLines as a new layer to the map 
 L.geoJSON(myLines, {
     style: myStyle
 }).addTo(mymap);
@@ -109,46 +104,22 @@ L.geoJSON(geojsonFeature, {
 
 function onEachFeature(feature, layer) {
     // does this feature have a property named popupContent?
+
+
     if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent);
+        console.log(feature.properties.popupContent)
     }
 }
 
-
-// this is exactly what I have above. Is it necessary?
-var somegeojsonFeature = {
-    "type": "Feature",
-    "properties": {
-        "name": "Coors Field",
-        "amenity": "Baseball Stadium",
-        "popupContent": "This is where the Rockies play!"
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [-104.99404, 39.75621]
-    }
-};
-
-L.geoJSON(somegeojsonFeature).addTo(mymap);
-
 // this is not working
-L.geoJSON(somegeojsonFeature, {
-    onEachFeature: onEachFeature
+var test = L.geoJSON(geojsonFeature, {
+    onEachFeature: onEachFeature,
 }).addTo(mymap);
 
 
 // this is not working
-var someFeatures = [{
-    "type": "Feature",
-    "properties": {
-        "name": "Coors Field",
-        "show_on_map": true
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [-104.99404, 39.75621]
-    }
-}, {
+var someFeatures = [ {
     "type": "Feature",
     "properties": {
         "name": "Busch Field",
@@ -165,3 +136,5 @@ L.geoJSON(someFeatures, {
         return feature.properties.show_on_map;
     }
 }).addTo(mymap);
+
+// everytime geoJSON is called it creates a new layer?
