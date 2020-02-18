@@ -1,4 +1,4 @@
-// Ashley Kuehl, GEOG 575, Activity 5 geojsonTutorial
+// Ashley Kuehl, GEOG 575, Activity 5 Main: Non-Resident Arrivals by the thousands
 
 //
 //
@@ -11,8 +11,15 @@ function createMap(){
   });
 
   // add OSM basetile
-  L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+  // L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  //   attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+  // }).addTo(map);
+
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  	subdomains: 'abcd',
+  	maxZoom: 19
   }).addTo(map);
 
   // call getData function
@@ -32,7 +39,7 @@ function onEachFeature(feature, layer) {
 
 // this will be changed to load our megaCities data
 function getData(){
-  $.getJSON("data/MegaCities.geojson", function(response){
+  $.getJSON("data/NonResidentArrivals.geojson", function(response){
     L.geoJson(response, {
       onEachFeature: onEachFeature
     }).addTo(map);
@@ -41,7 +48,7 @@ function getData(){
 
 
 //Example 2.3 line 22...load the data
-$.getJSON("data/MegaCities.geojson", function(response){
+$.getJSON("data/NonResidentArrivals.geojson", function(response){
         //create marker options
         var geojsonMarkerOptions = {
             radius: 8,
