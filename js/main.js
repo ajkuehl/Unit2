@@ -1,4 +1,4 @@
-// Ashley Kuehl, GEOG 575, Activity 5 Main: Non-Resident Arrivals by the thousands
+// Ashley Kuehl, GEOG 575, Activity 5 Main: Non-Resident Arrivals by the thousands.
 // dataSource: United Nations, World Tourism Data  http://data.un.org/DocumentData.aspx?id=409, Non Resident Tourists/Visitors
 // years 1995 - 2016
 

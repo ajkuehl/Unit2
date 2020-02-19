@@ -1,4 +1,4 @@
-// Ashley Kuehl, GEOG 575, Activity 5 quicstartTutol
+// Ashley Kuehl, GEOG 575, Activity 5 quicstartTutorial
 
 // initialize the map using the l.map method and the "mapid" div in my html document.
 // The additioanl chained on setView method contains an array with two coordinates where center is followed by the zoom leevl of 13

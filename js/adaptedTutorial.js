@@ -1,4 +1,4 @@
-// Ashley Kuehl, GEOG 575, Activity 5 geojsonTutorial
+// Ashley Kuehl, GEOG 575, Activity 5 geojsonTutorial.
 
 //
 var map;
