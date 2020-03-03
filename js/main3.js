@@ -1,4 +1,4 @@
-// Ashley Kuehl, GEOG 575, Activity 5 Main: Non-Resident Arrivals by the thousands.
+// Ashley Kuehl, GEOG 575, Activity 6 Main: Non-Resident Arrivals by the thousands.
 // dataSource: United Nations, World Tourism Data  http://data.un.org/DocumentData.aspx?id=409, Non Resident Tourists/Visitors
 // years 1995 - 2016
 
@@ -21,50 +21,57 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png
   }).addTo(map);
 
   // call getData function
-  getData(map);
+  getData();
 };
 
 function calcMinValue(data){
   // create an empty array  to store data values
   var allValues = [];
   // loop through each country
-  for (var city of data.features){
-    console.log(data.features)
-    for(var year=1985; year <=2015; year+=5){
+  for (var country of data.features){
+
+    for(var year=1995; year <=2016; year+=3){
       // get # of arrivals for current year
-      var value = city.properties["Pop_" + String(year)];
+      var value = country.properties["Non-Resident Arrivals_" + String(year)];
+
       // add values to array
       allValues.push(value);
     }
   }
-  // get minimum value of our array...................is this right?.......................
+  // get minimum value of our array
   var minValue = Math.min(...allValues)
+
 // play with the min value depending on data. Larger countries may look nuts.
   return minValue;
-  // console.log(allValues);
+
 }
 
 // calculate the radius of each proportional symbol
 function calcPropRadius(attValue){
+  // console.log(minValue);
+
   // constant factor adjusts symbol sizes evenly
-  var minRadius = 5;
+  var minRadius = 1;
   // flannery appearance compensation formula
   var radius = 1.0083*Math.pow(attValue/minValue,0.5715)* minRadius
+  // console.log(radius);
   return radius;
 };
 
-// New code
+// step 3 add circle markers for point features to the map
+// function createPropSymbols(data){........... old code
 
 // replacing anonymous function within the createPropSymbols function with new pointToLayer function
 function pointToLayer(feature,latlng){
   // step 4 determine the attribute for scaling the proportional symbols
-  var attribute = "Pop_2015";
+  var attribute = "Non-Resident Arrivals_2016";
+  // console.log(attribute);
   // create marker options
   // var geojsonMarkerOptions = {......... old code
   var options ={
       // radius: 8,.......... old code
       fillColor: "#ff7800",
-      color: "#fff",
+      color: "#000",
       weight: 1,
       opacity: 1,
       fillOpacity: 0.8
@@ -72,34 +79,42 @@ function pointToLayer(feature,latlng){
 
   // for each feature, determine its value for the selected attribute
   var attValue = Number(feature.properties[attribute]);
+  // console.log(attValue);
 
   // give each feature's circle marker a radius based on its attribute value
   options.radius = calcPropRadius(attValue);
-
+console.log(options.radius);
   // create circle marker Layer
   var layer = L.circleMarker(latlng, options);
   // console.log(layer);
 
   // build popup content String starting with country
-  // This isn't getting read. Reading as undefined
-  var popupContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
-  // "<p><b>"+ attribute + ":</b> " + feature.properties[attribute]+"</p>";
-  console.log(popupContent);
+  var popupContent = "<p><b>Country:</b> " + feature.properties.Country + "</p>";
+  // <p><b>"+ attribute + ":</b>" + feature.properties[attribute]+"</p>";
+  // console.log(popupContent);
+
   // add formatted attribute to popup content String
-  var year = attribute.split("_")[1];
-  popupContent += "<p><b> Population in " + year +":</b> " + feature.properties[attribute] + "million.</p>";
+  var year= attribute.split("_")[1];
+  popupContent += "<p><b> Number of arrivals in " + year +":</b> " + feature.properties[attribute] + " thousand.</p>";
   console.log(year);
 
   // bind the popup toteh circle marker
-  layer.bindPopup(popupContent);
+  // offsetting the popupContent
+  layer.bindPopup(popupContent, {
+    offset: new L.Point(0,-options.radius)
+  });
 
+  // console.log(layer.bindPopup(popupContent));
+  console.log(layer);
   // return the circle marker to the L.geoJson pointToLayeroption
   return layer;
+
 };
 
 
 // Add circle makrers for point features to teh map
-function createPropSymbols(data, map){
+function createPropSymbols(data){
+  // console.log(data);
   // create a leaflet GeoJSONlayer and add it to the map
   L.geoJson(data, {
     pointToLayer: pointToLayer
@@ -107,53 +122,70 @@ function createPropSymbols(data, map){
 };
 
 
-
-// // step 3 add circle markers for point features to the map
-// function createPropSymbols(data){
-//   // step 4 determine the attribute for scaling the proportional symbols
-//   var attribute = "Pop_2015";
-//   // create marker options
-//   var geojsonMarkerOptions = {
-//       radius: 8,
-//       fillColor: "#ff7800",
-//       color: "#fff",
-//       weight: 1,
-//       opacity: 1,
-//       fillOpacity: 0.8
-//   };
-//   // create a Leaflet GeoJSON layer and add it to the map
-//   L.geoJson(data,{
-//       pointToLayer: function (feature,latlng){
-//
-//         // step 5 for each feature, determine its value for the selected attribute, number function makes the string attribute into a number
-//         // number function not working
-//         var attValue = Number(feature.properties[attribute]);
-//
-//         // step 6 Give each feature's circle marker a radius based on its attribute value
-//         geojsonMarkerOptions.radius = calcPropRadius(attValue);
-//
-//         //console.log(feature.properties,attValue);
-//         // create circle markers
-//         return L.circleMarker(latlng, geojsonMarkerOptions);
-//       }
-//   }).addTo(map);
-// };
-
 // step 2 import geoJson data
-// function getData(map)
-function getData(map){
+function getData(){
+  // console.log("hello world");
   // load data
-  $.getJSON("data/MegaCities.geojson", function(response){
+  $.getJSON("data/NonResidentArrivals.geojson", function(response){
     // calculate minimum data value
     minValue = calcMinValue(response);
-    // L.geoJson(response, {.........don't know what this is about. old code?.................
+    // console.log(minValue);
 
     // call function to create proportional symbols
+    // I beleive this is not working
     createPropSymbols(response);
-      // onEachFeature: onEachFeature..... old code
-    // }).addTo(map);..... old code
+    console.log("hello world");
   });
 };
+
+// Step 1: Crate new sequence controls
+function createSequenceControls(){
+  // create range input element(slider)
+  $('#panel').append('<input class="range-slider" type="range">');
+  // set slider attributes
+  $('.range-slider').attr({
+    max: 14,
+    min: 0,
+    value: 0,
+    step: 1
+  });
+};
+
+// Import Geojson data
+// function getData()
+function getData(map){
+  // load data
+  $.ajax("data/NonResidentArrivals.geojson", {
+    dataType: "json",
+    success: function(response){
+      // create an attributes array
+      var attributes = processData(response);
+
+      calcMinValue(response);
+
+      createPropSymbols(response,attributes);
+      createSequenceControls(attributes);
+
+
+      // minValue = calcMinValue(response);
+      // // add symbols and UI elements
+      // createPropSymbols(response);
+      // createSequenceControls();
+    }
+  });
+};
+
+$('#panel').append('<button class="step" id="reverse">Reverse</button>');
+$('#panel').append('<button class="step" id="forward">Forward</button>');
+
+// replace button content with images
+// this isn't working
+$('#reverse').html('img src ="img/reverse.png">');
+$('#forward').html('img src ="img/forward.png">');
+
+
+
+
 
 
 $(document).ready(createMap);
