@@ -1,4 +1,9 @@
-.leaflet-popup-content p{
+#mapid {
+  height: 400px;
+  width: 80%;
+  display: inline-block;
+}
+/*.leaflet-popup-content p{
   margin: 0.2em 0;
 }
 
@@ -6,13 +11,33 @@
   height: 400px;
   width: 80%;
   display: inline-block;
-}
+}*/
 
-#panel{
-  width:16%;
+#panel {
+  width: 16%;
   padding: 20px;
-  display:inline-block;
+  display: inline-block;
   vertical-align: top;
   text-align: center;
   line-height: 42px;
+}
+
+.range-slider {
+  width:55%;
+}
+
+.step {
+  width:20%;
+}
+
+.step img{
+  width:100%;
+}
+
+#forward {
+  float: right;
+}
+
+#reverse {
+  float:left;
 }
