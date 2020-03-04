@@ -24,12 +24,28 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png
   getData(map);
 };
 
+// // step 2 import geoJson data moved to bottom 
+// // function getData(map)
+// function getData(){
+//   // load data
+//   $.getJSON("data/MegaCities.geojson", function(response){
+//     // calculate minimum data value
+//     minValue = calcMinValue(response);
+//     // L.geoJson(response, {.........don't know what this is about. old code?.................
+//
+//     // call function to create proportional symbols
+//     createPropSymbols(response);
+//       // onEachFeature: onEachFeature..... old code
+//     // }).addTo(map);..... old code
+//   });
+// };
+
 function calcMinValue(data){
   // create an empty array  to store data values
   var allValues = [];
   // loop through each country
   for (var city of data.features){
-    console.log(data.features)
+    // console.log(data.features)
     for(var year=1985; year <=2015; year+=5){
       // get # of arrivals for current year
       var value = city.properties["Pop_" + String(year)];
@@ -37,9 +53,8 @@ function calcMinValue(data){
       allValues.push(value);
     }
   }
-  // get minimum value of our array...................is this right?.......................
+  // get minimum value of our array
   var minValue = Math.min(...allValues)
-// play with the min value depending on data. Larger countries may look nuts.
   return minValue;
   // console.log(allValues);
 }
@@ -53,7 +68,6 @@ function calcPropRadius(attValue){
   return radius;
 };
 
-// New code
 
 // replacing anonymous function within the createPropSymbols function with new pointToLayer function
 function pointToLayer(feature,latlng){
@@ -98,50 +112,17 @@ function pointToLayer(feature,latlng){
 };
 
 
-// Add circle makrers for point features to teh map
-function createPropSymbols(data, map){
+// Step 3 Add circle makrers for point features to teh map
+function createPropSymbols(data){
   // create a leaflet GeoJSONlayer and add it to the map
   L.geoJson(data, {
     pointToLayer: pointToLayer
   }).addTo(map);
 };
 
-
-
-// // step 3 add circle markers for point features to the map
-// function createPropSymbols(data){
-//   // step 4 determine the attribute for scaling the proportional symbols
-//   var attribute = "Pop_2015";
-//   // create marker options
-//   var geojsonMarkerOptions = {
-//       radius: 8,
-//       fillColor: "#ff7800",
-//       color: "#fff",
-//       weight: 1,
-//       opacity: 1,
-//       fillOpacity: 0.8
-//   };
-//   // create a Leaflet GeoJSON layer and add it to the map
-//   L.geoJson(data,{
-//       pointToLayer: function (feature,latlng){
-//
-//         // step 5 for each feature, determine its value for the selected attribute, number function makes the string attribute into a number
-//         // number function not working
-//         var attValue = Number(feature.properties[attribute]);
-//
-//         // step 6 Give each feature's circle marker a radius based on its attribute value
-//         geojsonMarkerOptions.radius = calcPropRadius(attValue);
-//
-//         //console.log(feature.properties,attValue);
-//         // create circle markers
-//         return L.circleMarker(latlng, geojsonMarkerOptions);
-//       }
-//   }).addTo(map);
-// };
-
 // step 2 import geoJson data
 // function getData(map)
-function getData(map){
+function getData(){
   // load data
   $.getJSON("data/MegaCities.geojson", function(response){
     // calculate minimum data value
@@ -154,6 +135,5 @@ function getData(map){
     // }).addTo(map);..... old code
   });
 };
-
 
 $(document).ready(createMap);
