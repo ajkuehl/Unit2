@@ -83,25 +83,19 @@ function pointToLayer(feature,latlng,attributes){
       opacity: 1,
       fillOpacity: 0.8
   };
-
   // for each feature, determine its value for the selected attribute
   var attValue = Number(feature.properties[attribute]);
-
   // give each feature's circle marker a radius based on its attribute value
   options.radius = calcPropRadius(attValue);
-
   // create circle marker Layer
   var layer = L.circleMarker(latlng, options);
-
   // build popup content String starting with country
   var popupContent = new PopupContent(feature.properties,attribute);
-
   // bind the popup to the circle marker
   // offsetting the popupContent on map to not cover up marker
   layer.bindPopup(popupContent.formatted, {
     offset: new L.Point(0,-options.radius)
   });
-
   // return the circle marker to the L.geoJson pointToLayeroption
   return layer;
 };
@@ -126,7 +120,6 @@ function createSequenceControls(attributes){
     options: {
       position: 'bottomleft'
     },
-
     onAdd: function(){
       // create the control container div with a particular class name
       var container = L.DomUtil.create('div', 'sequence-control-container');
@@ -149,12 +142,12 @@ function createSequenceControls(attributes){
   map.addControl(new SequenceControl());
 
   // // set slider attributes using jquery..............................is this code necessary?
-  $('.range-slider').attr({
-    max: 14,
-    min: 0,
-    value: 0,
-    step: 1
-  });
+  // $('.range-slider').attr({
+  //   max: 14,
+  //   min: 0,
+  //   value: 0,
+  //   step: 1
+  // });
 
   // replace button content with images
   $('#reverse').html('<img src ="img/reverse.png">');
@@ -205,6 +198,34 @@ function createLegend(attributes){
       // create the control container with a particular class name
       var container = L.DomUtil.create('div', 'legend-control-container');
 
+      // add temportal legend div to container
+      $(container).append('<div id="temporal-legend">')
+
+
+
+
+
+      // ...............adding temporal index.................... unsure if correct
+      // here I want to add a popup with an index of the date, function updateLegend (written into update propSymbols) will update index year)
+      $(container).append('<input class =')
+
+
+
+
+      // step 1: start  attribute legend svg String
+      var svg = '<svg id="attribute-legend" width="130px" height="130px">';
+      // array of circles names to base loop on
+      var circles = ["max", "mean", "min"];
+      // Loop to add each circle adn text to svg String
+      for (var i=0; i<circles.length; i++){
+        // circle String
+        svg += '<circle class ="legend-circle" id="' + circles[i] + '" fill="#7932a8" fill-opacity ="0.8" stroke="#000000" cx="65"/>';
+      };
+      // clsoe svg String
+      svg += "</svg>";
+      // add attribute legend svg to container
+      $(container).append(svg);
+
       // PUT SCRIPT TO CREATE THE TEMPORAL LEGEND here I think i want this to  just tell me the year right now.
 
 
@@ -219,56 +240,22 @@ function createLegend(attributes){
 
 
 
-      // disable any mouse event lisenters for the container
+      // disable any mouse event lisenters for the container.................................................add
       L.DomEvent.disableClickPropagation(container);
       return container;
     }
   });
   map.addControl(new LegendControl());
 
-  // // set slider attributes using jquery..............................is this code necessary?
-  $('.range-slider').attr({
-    max: 14,
-    min: 0,
-    value: 0,
-    step: 1
-  });
 
-  // replace button content with images
-  $('#reverse').html('<img src ="img/reverse.png">');
-  $('#forward').html('<img src ="img/forward.png">');
+  // Input listners here
+  // $('')
 
-  // Input listener for buttons
-  // create step using jquery click function
-  $('.step').click(function(){
-    // Index vakue of data is set to the slider element
-    var index = $('.range-slider').val();
-    // Conditional statement to increment or decrement depending on forward or reverse button selection
-    if ($(this).attr('id')=='forward'){
-      index++;
-      // If user selects past last attribute, wrap around to first attribute to start over
-      // data contains 8 years to pull from
-      index = index > 7 ? 0: index;
-    } else if ($(this).attr('id')=='reverse'){
-      index--;
-      // If user selects prior to first attribute, wrap around to the last attribute
-      index = index < 0 ? 7 : index;
-    };
-    // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
-    updatePropSymbols(attributes[index]);
-    // As user selects index values, update slider
-    $('.range-slider').val(index);
-  });
 
-  // Create input listener for slider using jquery on function
-  $('.range-slider').on('input',function(){
-    // Get the new index values
-    var index = $(this).val();
-    // check log to see if working correctly, it is!
-    console.log(index);
-    // Calling the updatePropSymbols function and passing through attributes indexed for sliding action
-    updatePropSymbols(attributes[index]);
-  });
+
+  // Calling the updateLegend function and passing through attributes indexed for sliding action
+  // need to add an updateLegend function to update PropSymbols function
+  // updateLegend(attributes[0]);
 };
 
 
