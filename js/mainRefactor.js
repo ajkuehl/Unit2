@@ -182,6 +182,83 @@ function createSequenceControls(attributes){
     $('.range-slider').val(index);
   });
 
+  // Create input listener for slider using jquery on function
+  $('.range-slider').on('input',function(){
+    // Get the new index values
+    var index = $(this).val();
+    // check log to see if working correctly, it is!
+    console.log(index);
+    // Calling the updatePropSymbols function and passing through attributes indexed for sliding action
+    updatePropSymbols(attributes[index]);
+  });
+};
+
+
+// UPDATE THIS >>>..........................................................................................................
+// reference https://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
+function createLegend(attributes){
+  var LegendControl = L.Control.extend({
+    options: {
+      position:'bottomright'
+    },
+    onAdd: function() {
+      // create the control container with a particular class name
+      var container = L.DomUtil.create('div', 'legend-control-container');
+
+      // PUT SCRIPT TO CREATE THE TEMPORAL LEGEND here I think i want this to  just tell me the year right now.
+
+
+      // initializing other Dom elements
+      // create range input element(slider) using jquery to select the div panel appending the slider to the div
+      // $(container).append('<input class="range-slider"type="range">');
+      //
+      // // Create step buttons using jquery to select div panel and append method to add button to the div
+      // $(container).append('<button class="step" id="reverse" title="Reverse">Reverse</button>');
+      // $(container).append('<button class="step" id="forward" title="Forward">Forward</button>');
+
+
+
+
+      // disable any mouse event lisenters for the container
+      L.DomEvent.disableClickPropagation(container);
+      return container;
+    }
+  });
+  map.addControl(new LegendControl());
+
+  // // set slider attributes using jquery..............................is this code necessary?
+  $('.range-slider').attr({
+    max: 14,
+    min: 0,
+    value: 0,
+    step: 1
+  });
+
+  // replace button content with images
+  $('#reverse').html('<img src ="img/reverse.png">');
+  $('#forward').html('<img src ="img/forward.png">');
+
+  // Input listener for buttons
+  // create step using jquery click function
+  $('.step').click(function(){
+    // Index vakue of data is set to the slider element
+    var index = $('.range-slider').val();
+    // Conditional statement to increment or decrement depending on forward or reverse button selection
+    if ($(this).attr('id')=='forward'){
+      index++;
+      // If user selects past last attribute, wrap around to first attribute to start over
+      // data contains 8 years to pull from
+      index = index > 7 ? 0: index;
+    } else if ($(this).attr('id')=='reverse'){
+      index--;
+      // If user selects prior to first attribute, wrap around to the last attribute
+      index = index < 0 ? 7 : index;
+    };
+    // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
+    updatePropSymbols(attributes[index]);
+    // As user selects index values, update slider
+    $('.range-slider').val(index);
+  });
 
   // Create input listener for slider using jquery on function
   $('.range-slider').on('input',function(){
@@ -262,6 +339,7 @@ function getData(map){
       // passing attributes to the two functions below
       createPropSymbols(response,attributes);
       createSequenceControls(attributes);
+      createLegend(attributes);
     }
   });
 };
