@@ -19,16 +19,11 @@ function createMap(){
     zoom: 2
   });
 
-
-
-//Alias method for l.Map()
-function createMap(){
-  map = L.map= function('mapid',options){
-    center: [0,0],
-    zoom: 2
-  });
-  return new L.Map(id,options);
+// create alias
+L.map = function(id, options){
+  return new L.Map(id,optins);
 };
+
 
 
 // tilelayer of map and addTo method passed to the map object
@@ -127,16 +122,43 @@ function createPropSymbols(data,attributes){
 
 // Create new sequence controls, passing through attributes defined below
 function createSequenceControls(attributes){
-  // create range input element(slider) using jquery to select the div panel appending the slider to the div
-  $('#panel').append('<input class="range-slider" type="range">');
+  var SequenceControl = L.Control.extend({
+    options: {
+      position: 'bottomleft'
+    },
 
-  // set slider attributes using jquery
+    onAdd: function(){
+      // create the control container div with a particular class name
+      var container = L.DomUtil.create('div', 'sequence-control-container');
+
+      // initializing other Dom elements
+      // create range input element(slider) using jquery to select the div panel appending the slider to the div
+      $(container).append('<input class="range-slider"type="range">');
+
+      // Create step buttons using jquery to select div panel and append method to add button to the div
+      $(container).append('<button class="step" id="reverse" title="Reverse">Reverse</button>');
+      $(container).append('<button class="step" id="forward" title="Forward">Forward</button>');
+
+      // disable any mouse event lisenters for the container
+      L.DomEvent.disableClickPropagation(container);
+
+      return container;
+    }
+  });
+
+  map.addControl(new SequenceControl());
+
+  // // set slider attributes using jquery..............................is this code necessary?
   $('.range-slider').attr({
     max: 14,
     min: 0,
     value: 0,
     step: 1
   });
+
+  // replace button content with images
+  $('#reverse').html('<img src ="img/reverse.png">');
+  $('#forward').html('<img src ="img/forward.png">');
 
   // Input listener for buttons
   // create step using jquery click function
@@ -221,16 +243,6 @@ function processData(data){
   console.log(attributes);
   return attributes;
 };
-
-
-
-// Create step buttons using jquery to select div panel and append method to add button to the div
-$('#panel').append('<button class="step" id="reverse">Reverse</button>');
-$('#panel').append('<button class="step" id="forward">Forward</button>');
-
-// replace button content with images
-$('#reverse').html('<img src ="img/reverse.png">');
-$('#forward').html('<img src ="img/forward.png">');
 
 
 
