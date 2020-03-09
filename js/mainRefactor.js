@@ -6,9 +6,8 @@
 
 //creation of the map object declaired globally
 var map;
-
+// circles????? ........................updates
 var dataStats = {};
-
 // declaring the minimum value globally
 var minValue;
 
@@ -154,13 +153,13 @@ function createSequenceControls(attributes){
 
   map.addControl(new SequenceControl());
 
-  // // set slider attributes using jquery..............................is this code necessary?
-  // $('.range-slider').attr({
-  //   max: 14,
-  //   min: 0,
-  //   value: 0,
-  //   step: 1
-  // });
+  // set slider attributes using jquery..............................is this code necessary?
+  $('.range-slider').attr({
+    max: 7,
+    min: 0,
+    value: 0,
+    step: 1
+  });
 
   // replace button content with images
   $('#reverse').html('<img src ="img/reverse.png">');
@@ -337,6 +336,7 @@ function getData(map){
       createPropSymbols(response,attributes);
       createSequenceControls(attributes);
       createLegend(attributes);
+      // createTitle();
     }
   });
 };
