@@ -6,6 +6,8 @@
 
 //creation of the map object declaired globally
 var map;
+// circles????? ........................updates
+var dataStats = {};
 // declaring the minimum value globally
 var minValue;
 
@@ -19,35 +21,69 @@ function createMap(){
     zoom: 2
   });
 
-
-
-// tilelayer of map and addTo method passed to the map object
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-  	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  	subdomains: 'abcd',
-  	maxZoom: 19
-  }).addTo(map);
-  // call getData function
-  getData();
+// create alias
+L.map = function(id, options){
+  return new L.Map(id,optins);
 };
 
 
 
+// // tilelayer of map and addTo method passed to the map object
+// L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+//   	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+//   	subdomains: 'abcd',
+//   	maxZoom: 19
+//   }).addTo(map);
+//   // call getData function
+//   getData();
+// };
+
+// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+//   attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+//   subdomains: 'abcd',
+//   maxZoom: 22
+// }).addTo(map);
+// // call getData function
+// getData();
+// };
+
+L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 18,
+	ext: 'png'
+}).addTo(map);
+// call getData function
+getData();
+};
+
+
 // data passed through to calcMinValue function
 function calcMinValue(data){
+// function calcstats(data){
   // create an empty array  to store data values
   var allValues = [];
   // loop through each country in data set
   for (var country of data.features){
     // data set starts at year 95 and goes through 2016, intervals of 3 years
-    for(var year=1995; year <=2016; year+=3){
+    for(var year=1990; year <=2016; year+=2){
       // get # of arrivals for current year
-      var value = country.properties["Non-Resident Arrivals_" + String(year)];
+      var value = country.properties["Forest area (% of land area)_" + String(year)];
       // add values to empty allValues array above
       allValues.push(value);
     }
   }
+  // get min, max, mean stats for arrays
+  dataStats.min = Math.min(...allValues);
+  dataStats.max = Math.max(...allValues);
+
+  // calculate mean
+  var sum = allValues.reduce(function(a,b){return a+b;});
+  dataStats.mean = sum/allValues.length;
+
   // get minimum value of our array as a starting point to display data
+  // .........................old code .............................
   var minValue = Math.min(...allValues)
   return minValue;
 }
@@ -58,7 +94,7 @@ function calcMinValue(data){
 function calcPropRadius(attValue){
   // constant factor adjusts symbol sizes evenly
   // working with large numbers, therefore minradius is adjusted in size to not overwhelm user
-  var minRadius = 1;
+  var minRadius = 8;
   // flannery appearance compensation formula
   var radius = 1.0083*Math.pow(attValue/minValue,0.5715)* minRadius
   return radius;
@@ -72,35 +108,25 @@ function pointToLayer(feature,latlng,attributes){
   var attribute = attributes[0];
   // create marker styling options
   var options ={
-      fillColor: "#7932a8",
+      fillColor: "#228B22",
       color: "#000",
       weight: 1,
       opacity: 1,
-      fillOpacity: 0.8
+      fillOpacity: 0.5
   };
-
   // for each feature, determine its value for the selected attribute
   var attValue = Number(feature.properties[attribute]);
-
   // give each feature's circle marker a radius based on its attribute value
   options.radius = calcPropRadius(attValue);
-
   // create circle marker Layer
   var layer = L.circleMarker(latlng, options);
-
   // build popup content String starting with country
-  var popupContent = "<p><b>Country:</b> " + feature.properties.Country + "</p>";
-
-  // add formatted attribute to popup content String
-  var year= attribute.split("_")[1];
-  popupContent += "<p><b> Number of non-resident arrivals by the thousands " + year +":</b> " + feature.properties[attribute] + "</p>";
-
+  var popupContent = new PopupContent(feature.properties,attribute);
   // bind the popup to the circle marker
   // offsetting the popupContent on map to not cover up marker
-  layer.bindPopup(popupContent, {
+  layer.bindPopup(popupContent.formatted, {
     offset: new L.Point(0,-options.radius)
   });
-
   // return the circle marker to the L.geoJson pointToLayeroption
   return layer;
 };
@@ -121,16 +147,42 @@ function createPropSymbols(data,attributes){
 
 // Create new sequence controls, passing through attributes defined below
 function createSequenceControls(attributes){
-  // create range input element(slider) using jquery to select the div panel appending the slider to the div
-  $('#panel').append('<input class="range-slider" type="range">');
+  var SequenceControl = L.Control.extend({
+    options: {
+      position: 'bottomleft'
+    },
+    onAdd: function(){
+      // create the control container div with a particular class name
+      var container = L.DomUtil.create('div', 'sequence-control-container');
 
-  // set slider attributes using jquery
+      // initializing other Dom elements
+      // create range input element(slider) using jquery to select the div panel appending the slider to the div
+      $(container).append('<input class="range-slider"type="range">');
+
+      // Create step buttons using jquery to select div panel and append method to add button to the div
+      $(container).append('<button class="step" id="reverse" title="Reverse">Reverse</button>');
+      $(container).append('<button class="step" id="forward" title="Forward">Forward</button>');
+
+      // disable any mouse event lisenters for the container
+      L.DomEvent.disableClickPropagation(container);
+
+      return container;
+    }
+  });
+
+  map.addControl(new SequenceControl());
+
+  // set slider attributes using jquery, provide min and max number of steps
   $('.range-slider').attr({
-    max: 14,
+    max: 13,
     min: 0,
     value: 0,
     step: 1
   });
+
+  // replace button content with images
+  $('#reverse').html('<img src ="img/reverse.png">');
+  $('#forward').html('<img src ="img/forward.png">');
 
   // Input listener for buttons
   // create step using jquery click function
@@ -142,18 +194,17 @@ function createSequenceControls(attributes){
       index++;
       // If user selects past last attribute, wrap around to first attribute to start over
       // data contains 8 years to pull from
-      index = index > 7 ? 0: index;
+      index = index > 13 ? 0: index;
     } else if ($(this).attr('id')=='reverse'){
       index--;
       // If user selects prior to first attribute, wrap around to the last attribute
-      index = index < 0 ? 7 : index;
+      index = index < 0 ? 13 : index;
     };
     // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
     updatePropSymbols(attributes[index]);
     // As user selects index values, update slider
     $('.range-slider').val(index);
   });
-
 
   // Create input listener for slider using jquery on function
   $('.range-slider').on('input',function(){
@@ -164,6 +215,85 @@ function createSequenceControls(attributes){
     // Calling the updatePropSymbols function and passing through attributes indexed for sliding action
     updatePropSymbols(attributes[index]);
   });
+};
+
+
+// reference https://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
+// Create Legend control, passing through attributes
+function createLegend(attributes){
+  var LegendControl = L.Control.extend({
+    options: {
+      position:'bottomright'
+    },
+    onAdd: function() {
+      // create the control container with ledgend class
+      var container = L.DomUtil.create('div', 'legend-control-container');
+      // Initializing other Dom elements
+
+      // here I want to add a popup with an index of the date, function updateLegend (written into update propSymbols) will update index year)
+      // create range input element(year index) using jquery to select the div panel appending the slider to the div
+      // $(container).append('<input class ="year-index"type="text">');.....................
+
+      // add temportal legend div to container.................... is popup correct?
+      $(container).append('<div id="temporal-legend">');
+      // $(container).append(updatePropSymbols.popupContent);
+
+      var legendYear = "year index here";
+      // var legendYear = updatePropSymbols(legendYear);
+      $(container).append(legendYear);
+
+      // var legendAttribute = "Percentage of Forested Area";
+      // $(container).append(legendAttribute);
+
+
+
+
+
+      // step 1: start  attribute legend svg String
+      // var svg = '<svg id="attribute-legend" class=" " width="130px" height="130px">';
+      var svg = '<svg id="attribute-legend" width="180px" height="105px">';
+      // array of circles names to base loop on
+      var circles = ["max", "mean", "min"];
+      // Loop to add each circle adn text to svg String
+      for (var i=0; i<circles.length; i++){
+        // assign the r and cy attributes
+        var radius = calcPropRadius(dataStats[circles[i]]);
+        var cy = 75 - radius;
+        // circle String
+        svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.8" stroke="#000000" cx="35"/>';
+
+        // evenly space out labels
+        var textY = i *20 +30;
+
+        // test string
+        svg += '<text id="' + circles[i] + '-text" x="70" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " % of forested land" + '</text>';
+      };
+      // clsoe svg String
+      svg += "</svg>";
+      // add attribute legend svg to container
+      $(container).append(svg);
+
+      // $(container).append(legendYear);
+      // disable any mouse event lisenters for the container.................................................add
+      // L.DomEvent.disableClickPropagation(container);
+      return container;
+    }
+  });
+  map.addControl(new LegendControl());
+
+
+  // Input listners for updating temporal legend "number of turistis in (year)"....................Not sure what to do here
+  // $('.temporal-legend').append('<h2> id="legendYear"> # of tourists in (year)</h2>');
+
+  // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
+  // updatePropSymbols(attributes[legendYear]);
+
+
+
+  // Calling the updateLegend function and passing through attributes indexed for sliding action
+  // need to add an updateLegend function to update PropSymbols function
+  // updateLegend(attributes[0]);
+};
 
 
 
@@ -177,18 +307,29 @@ function updatePropSymbols(attribute){
       var radius = calcPropRadius(props[attribute]);
       layer.setRadius(radius);
       // add country to popup content string
-      var popupContent = "<p><b><Country:</b>" + props.Country + "</p>";
-      // add formatted attribute to panel conent String
-      var year = attribute.split("_")[1];
-      popupContent += "<p><b>Number of non-resident arrivals by the thousands " + year + ":</b> " + props[attribute] + "</p>";
+      var popupContent = new PopupContent(props,attribute);
       // update popup content
       popup = layer.getPopup();
-      popup.setContent(popupContent).update();
+      popup.setContent(popupContent.formatted).update();
+
+
+      // update year in legend based on new attribute values
+      // var legendYear = "hello"
+      // createLegend(props[attribute.split("_")[1]]);
     };
   });
 };
 
 
+
+// consolidating redundant code
+// Object Oriented code refeactoring with a constructor function
+function PopupContent(properties, attribute){
+  this.properties = properties;
+  this.attribute = attribute;
+  this.year = attribute.split("_")[1];
+  this.population = this.properties[attribute]
+  this.formatted = "<p><b><Country:</b>" + this.properties.Country + "</p><p><b>Forested area (% of land area) " + this.year + ":</b> " + this.population + "</p>";
 };
 
 
@@ -201,7 +342,7 @@ function processData(data){
   var properties = data.features[0].properties;
   // loop through data to push each attribute name into attributes array
   for (var attribute in properties){
-    if (attribute.indexOf("Non-Resident Arrivals") > -1){
+    if (attribute.indexOf("Forest area (% of land area)") > -1){
       attributes.push(attribute);
     };
   };
@@ -212,21 +353,12 @@ function processData(data){
 
 
 
-// Create step buttons using jquery to select div panel and append method to add button to the div
-$('#panel').append('<button class="step" id="reverse">Reverse</button>');
-$('#panel').append('<button class="step" id="forward">Forward</button>');
-
-// replace button content with images
-$('#reverse').html('<img src ="img/reverse.png">');
-$('#forward').html('<img src ="img/forward.png">');
-
-
-
-// Import Geojson data, here I deviated from lab instructions as I ended up with two getData functions
-// function below combines the two functions. I found it was necessary to keep the minValue defined
+// Import Geojson data
+// function below has been refractored combining two getData functions
+// I found it was necessary to keep the minValue variable defined to execute the calcMinValue and calcPropRadius functions properly
 function getData(map){
   // load data
-  $.ajax("data/NonResidentArrivals.geojson", {
+  $.ajax("data/forestLandArea.geojson", {
     dataType: "json",
     success: function(response){
       // define attributes with what's going on in the processData function above
@@ -234,12 +366,18 @@ function getData(map){
       var attributes = processData(response);
       // minValue needs to stay defined as used in calcMinValue function
       minValue = calcMinValue(response);
+
+      // getting rid of minValue takes away my proportional symbols.
+      // calcStats(response);
+
       // passing attributes to the two functions below
       createPropSymbols(response,attributes);
       createSequenceControls(attributes);
+      createLegend(attributes);
     }
   });
 };
+
 
 
 // Ready, get set, view!
