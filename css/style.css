@@ -26,8 +26,8 @@
   height:400px;
   width:20%;
   font-family: arial;
-  font-size:20px;
-  text
+  font-size:15px;
+  background: #e5f5e0;
   /* text-decoration-color:#228B22; */
   float: left;
   /* background:gray; */
@@ -38,6 +38,9 @@
   height:100px;
   width: 100%;
   float: bottomleft;
+  font-size:9px;
+  /**/not sure if it's actually changing the color here
+  text-decoration: #bdbdbd;
 }
 
 /* sequence */
@@ -58,7 +61,7 @@
   appearance:none;
   width:150px;
   height:10px;
-  border-radius: 5px;
+  border-radius: 20px;
   background: #d3d3d3;
   outline:none;
   opacity:0.8;
@@ -76,16 +79,17 @@
   cursor: pointer;
 }
 
-/* .range-slider::-moz-range-thumb {
-  width:25px;
-  height:25px;
+ .range-slider::-moz-range-thumb {
+  width:15px;
+  height:15px;
   border-radius:50%;
   background: #228B22;
   cursor: pointer;
-} */
+}
 
 .step {
-  width:36px;
+  width:45px;
+  height:30px
 }
 
 .step img{
@@ -106,13 +110,14 @@
 /* Legend */
 /* play wtih this */
 .legend-control-container{
-  width: 210px;
-  height:130px;
+  width: 190px;
+  height:100px;
   background-color: rgba(255,255,255,0.8);
   padding 10px;
   line-height: 45px;
   text-align: center;
   border: solid gray 1px;
+  font-size: 11px;
 }
 
 /* .title-container{

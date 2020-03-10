@@ -27,26 +27,6 @@ L.map = function(id, options){
 };
 
 
-
-// // tilelayer of map and addTo method passed to the map object
-// L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-//   	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-//   	subdomains: 'abcd',
-//   	maxZoom: 19
-//   }).addTo(map);
-//   // call getData function
-//   getData();
-// };
-
-// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-//   attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-//   subdomains: 'abcd',
-//   maxZoom: 22
-// }).addTo(map);
-// // call getData function
-// getData();
-// };
-
 L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}', {
 	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 	subdomains: 'abcd',
@@ -94,7 +74,7 @@ function calcMinValue(data){
 function calcPropRadius(attValue){
   // constant factor adjusts symbol sizes evenly
   // working with large numbers, therefore minradius is adjusted in size to not overwhelm user
-  var minRadius = 8;
+  var minRadius = 5.5;
   // flannery appearance compensation formula
   var radius = 1.0083*Math.pow(attValue/minValue,0.5715)* minRadius
   return radius;
@@ -200,6 +180,8 @@ function createSequenceControls(attributes){
       // If user selects prior to first attribute, wrap around to the last attribute
       index = index < 0 ? 13 : index;
     };
+    console.log(index);
+    console.log(attributes);
     // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
     updatePropSymbols(attributes[index]);
     // As user selects index values, update slider
@@ -223,31 +205,16 @@ function createSequenceControls(attributes){
 function createLegend(attributes){
   var LegendControl = L.Control.extend({
     options: {
-      position:'bottomright'
+      position:'bottomleft'
     },
     onAdd: function() {
       // create the control container with ledgend class
       var container = L.DomUtil.create('div', 'legend-control-container');
       // Initializing other Dom elements
 
-      // here I want to add a popup with an index of the date, function updateLegend (written into update propSymbols) will update index year)
-      // create range input element(year index) using jquery to select the div panel appending the slider to the div
-      // $(container).append('<input class ="year-index"type="text">');.....................
-
-      // add temportal legend div to container.................... is popup correct?
-      $(container).append('<div id="temporal-legend">');
-      // $(container).append(updatePropSymbols.popupContent);
-
-      var legendYear = "year index here";
-      // var legendYear = updatePropSymbols(legendYear);
-      $(container).append(legendYear);
-
-      // var legendAttribute = "Percentage of Forested Area";
-      // $(container).append(legendAttribute);
-
-
-
-
+      // add temportal legend div to container
+      // step 1
+      $(container).append('<div id="temporal-legend"> Percent of Forested Land in <span id="legYear">1990</span></div>');
 
       // step 1: start  attribute legend svg String
       // var svg = '<svg id="attribute-legend" class=" " width="130px" height="130px">';
@@ -258,47 +225,39 @@ function createLegend(attributes){
       for (var i=0; i<circles.length; i++){
         // assign the r and cy attributes
         var radius = calcPropRadius(dataStats[circles[i]]);
-        var cy = 75 - radius;
+        var cy = 40 - radius;
         // circle String
-        svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.8" stroke="#000000" cx="35"/>';
+        svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.5" stroke="#000000" cx="20"/>';
 
         // evenly space out labels
-        var textY = i *20 +30;
+        var textY = i *15 +10;
 
         // test string
-        svg += '<text id="' + circles[i] + '-text" x="70" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " % of forested land" + '</text>';
+        svg += '<text id="' + circles[i] + '-text" x="45" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " % of forested land" + '</text>';
       };
       // clsoe svg String
       svg += "</svg>";
       // add attribute legend svg to container
       $(container).append(svg);
 
-      // $(container).append(legendYear);
-      // disable any mouse event lisenters for the container.................................................add
-      // L.DomEvent.disableClickPropagation(container);
+      // disable any mouse event lisenters for the container
+      L.DomEvent.disableClickPropagation(container);
       return container;
     }
   });
   map.addControl(new LegendControl());
-
-
-  // Input listners for updating temporal legend "number of turistis in (year)"....................Not sure what to do here
-  // $('.temporal-legend').append('<h2> id="legendYear"> # of tourists in (year)</h2>');
-
-  // Calling the updatePropSymbols function and passing through attributes indexed for clicking action
-  // updatePropSymbols(attributes[legendYear]);
-
-
-
-  // Calling the updateLegend function and passing through attributes indexed for sliding action
-  // need to add an updateLegend function to update PropSymbols function
-  // updateLegend(attributes[0]);
 };
 
 
 
 // Resize proportional symbols according to new attribute values, new map layer for each indexed attribute
 function updatePropSymbols(attribute){
+  // update Legend year
+  // console.log(attribute);
+  var year = attribute.split("_")[1];
+  $("span#legYear").html(year);
+
+
   map.eachLayer(function(layer){
     if (layer.feature && layer.feature.properties[attribute]){
       // access feature properties
@@ -311,11 +270,6 @@ function updatePropSymbols(attribute){
       // update popup content
       popup = layer.getPopup();
       popup.setContent(popupContent.formatted).update();
-
-
-      // update year in legend based on new attribute values
-      // var legendYear = "hello"
-      // createLegend(props[attribute.split("_")[1]]);
     };
   });
 };
@@ -366,10 +320,6 @@ function getData(map){
       var attributes = processData(response);
       // minValue needs to stay defined as used in calcMinValue function
       minValue = calcMinValue(response);
-
-      // getting rid of minValue takes away my proportional symbols.
-      // calcStats(response);
-
       // passing attributes to the two functions below
       createPropSymbols(response,attributes);
       createSequenceControls(attributes);
