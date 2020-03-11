@@ -1,8 +1,8 @@
 #title{
-  font-family: arial;
-  font-size: 30px;
-  height:40px;
-  width:100%;
+  font-family:arial;
+  font-size: 25px;
+  height:100px;
+  width:18.5%;
   background: #228B22;
   opacity: 0.8;
   color:white;
@@ -10,12 +10,13 @@
   line-height: 1.3;
   letter-spacing: 10px;
   text-shadow:3px 2px black;
+  padding: 10px 10px 10px;
 }
 
 
 #mapid {
   height: 400px;
-  width: 80%;
+  width: 79.5%;
   float: right;
   /* float: ; */
   /* display: inline-block; */
@@ -23,45 +24,49 @@
 
 
 #contextPanel{
-  height:400px;
-  width:20%;
+  height:390px;
+  width:18.5%;
   font-family: arial;
   font-size:15px;
   background: #e5f5e0;
-  /* text-decoration-color:#228B22; */
   float: left;
-  /* background:gray; */
-  /* opacity: 0.5 */
+  padding: 10px 10px 10px;
 }
 
 #credits{
   height:100px;
   width: 100%;
-  float: bottomleft;
+  float: bottom-left;
   font-size:9px;
   /**/not sure if it's actually changing the color here
   text-decoration: #bdbdbd;
 }
 
+
+/* adjusting the size of the popup */
+.leaflet-popup-content p{
+  margin: 0.2em 0;
+}
+
+
 /* sequence */
 /* reference: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
 .sequence-control-container{
-  width: 250px;
+  width: 190px;
   height:30px;
   background-color: rgba(255,255,255,0.8);
   padding 10px;
-  line-height: 32px;
+  line-height: 10px;
   text-align: center;
   border: solid gray 1px;
 }
 
 .range-slider {
-  /* width: 150px; */
   -webkit-appearance:none;
   appearance:none;
-  width:150px;
-  height:10px;
-  border-radius: 20px;
+  width:100px;
+  height:25px;
+  border-radius: 5px;
   background: #d3d3d3;
   outline:none;
   opacity:0.8;
@@ -88,7 +93,7 @@
 }
 
 .step {
-  width:45px;
+  width:40px;
   height:30px
 }
 
@@ -115,17 +120,9 @@
   background-color: rgba(255,255,255,0.8);
   padding 10px;
   line-height: 45px;
+  color:#006d2c;
+  font-family: arial;
+  font-size: 11px;
   text-align: center;
   border: solid gray 1px;
-  font-size: 11px;
 }
-
-/* .title-container{
-  width: 250px;
-  height:120px;
-  background-color: rgba(255,255,255,0.8);
-  padding 10px;
-  line-height: 45px;
-  text-align: center;
-  border: solid gray 1px
-} */

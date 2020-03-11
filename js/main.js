@@ -200,7 +200,7 @@ function createSequenceControls(attributes){
 };
 
 
-// reference https://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
+
 // Create Legend control, passing through attributes
 function createLegend(attributes){
   var LegendControl = L.Control.extend({
@@ -214,7 +214,7 @@ function createLegend(attributes){
 
       // add temportal legend div to container
       // step 1
-      $(container).append('<div id="temporal-legend"> Percent of Forested Land in <span id="legYear">1990</span></div>');
+      $(container).append('<div id="temporal-legend"><b>Percent of Forested Land in <u><span id="legYear">1990</span></u></b></div>');
 
       // step 1: start  attribute legend svg String
       // var svg = '<svg id="attribute-legend" class=" " width="130px" height="130px">';
@@ -227,13 +227,13 @@ function createLegend(attributes){
         var radius = calcPropRadius(dataStats[circles[i]]);
         var cy = 40 - radius;
         // circle String
-        svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.5" stroke="#000000" cx="20"/>';
+        svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.5" stroke="#000000" cx="65"/>';
 
         // evenly space out labels
         var textY = i *15 +10;
 
         // test string
-        svg += '<text id="' + circles[i] + '-text" x="45" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " % of forested land" + '</text>';
+        svg += '<text id="' + circles[i] + '-text" x="95" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " %" + '</text>';
       };
       // clsoe svg String
       svg += "</svg>";
@@ -283,7 +283,7 @@ function PopupContent(properties, attribute){
   this.attribute = attribute;
   this.year = attribute.split("_")[1];
   this.population = this.properties[attribute]
-  this.formatted = "<p><b><Country:</b>" + this.properties.Country + "</p><p><b>Forested area (% of land area) " + this.year + ":</b> " + this.population + "</p>";
+  this.formatted = "<p><b><Country:</b>" + this.properties.Country + "</p><p><b>Forested area of land " + this.year + ":</b> " + this.population + "%</p>";
 };
 
 
