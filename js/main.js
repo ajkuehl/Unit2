@@ -1,5 +1,6 @@
 // Ashley Kuehl, GEOG 575
 // Leaflet Lab: Percent of Forested Land by nation
+// March 11, 2020
 
 //creation of the global object to access later in the code
 var map;
