@@ -1,27 +1,21 @@
 // Ashley Kuehl, GEOG 575
-// Activity 6 Main: Non-Resident Arrivals by the thousands.
-// dataSource: United Nations, World Tourism Data  http://data.un.org/DocumentData.aspx?id=409
-// years 1995 - 2016, displayed as increments of three years
+// Leaflet Lab: Percent of Forested Land by nation
 
-
-//creation of the map object declaired globally
+//creation of the global object to access later in the code
 var map;
-// circles????? ........................updates
 var dataStats = {};
-// declaring the minimum value globally
 var minValue;
-
 
 
 // map properties and method to place map in HTML file
 // Create Leaflet Map
 function createMap(){
   map = L.map('mapid',{
-    center: [0,0],
+    center: [10,0],
     zoom: 2
   });
 
-// create alias
+// create map alias
 L.map = function(id, options){
   return new L.Map(id,optins);
 };
@@ -63,7 +57,6 @@ function calcMinValue(data){
   dataStats.mean = sum/allValues.length;
 
   // get minimum value of our array as a starting point to display data
-  // .........................old code .............................
   var minValue = Math.min(...allValues)
   return minValue;
 }
@@ -210,14 +203,9 @@ function createLegend(attributes){
     onAdd: function() {
       // create the control container with ledgend class
       var container = L.DomUtil.create('div', 'legend-control-container');
-      // Initializing other Dom elements
-
       // add temportal legend div to container
-      // step 1
       $(container).append('<div id="temporal-legend"><b>Percent of Forested Land in <u><span id="legYear">1990</span></u></b></div>');
-
-      // step 1: start  attribute legend svg String
-      // var svg = '<svg id="attribute-legend" class=" " width="130px" height="130px">';
+      // start  attribute legend svg String
       var svg = '<svg id="attribute-legend" width="180px" height="105px">';
       // array of circles names to base loop on
       var circles = ["max", "mean", "min"];
@@ -226,12 +214,10 @@ function createLegend(attributes){
         // assign the r and cy attributes
         var radius = calcPropRadius(dataStats[circles[i]]);
         var cy = 40 - radius;
-        // circle String
+        // circles and string are added to the svg variable
         svg += '<circle class ="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy + '" fill="#228B22" fill-opacity ="0.5" stroke="#000000" cx="65"/>';
-
-        // evenly space out labels
+        // evenly space out labels in the legend
         var textY = i *15 +10;
-
         // test string
         svg += '<text id="' + circles[i] + '-text" x="95" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " %" + '</text>';
       };
@@ -250,13 +236,13 @@ function createLegend(attributes){
 
 
 
-// Resize proportional symbols according to new attribute values, new map layer for each indexed attribute
+// This function resizes proportional symbols according to new attribute values, new map layer for each indexed attribute
 function updatePropSymbols(attribute){
-  // update Legend year
-  // console.log(attribute);
-  var year = attribute.split("_")[1];
-  $("span#legYear").html(year);
 
+  // update Legend year by creating a variable that pulls the year from data
+  var year = attribute.split("_")[1];
+  // using jquery to select the span ID in createLegend function and writing in the year variable around the span.
+  $("span#legYear").html(year);
 
   map.eachLayer(function(layer){
     if (layer.feature && layer.feature.properties[attribute]){
@@ -278,6 +264,7 @@ function updatePropSymbols(attribute){
 
 // consolidating redundant code
 // Object Oriented code refeactoring with a constructor function
+// This function creates popupContent for the markers by accessing properties and attributes from the data
 function PopupContent(properties, attribute){
   this.properties = properties;
   this.attribute = attribute;
@@ -301,7 +288,7 @@ function processData(data){
     };
   };
   // check result. Hey it works!
-  console.log(attributes);
+  // console.log(attributes);
   return attributes;
 };
 

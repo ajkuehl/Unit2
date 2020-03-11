@@ -1,56 +1,54 @@
+/* styling id classes within the html code */
+
 #title{
   font-family:arial;
-  font-size: 25px;
-  height:100px;
-  width:18.5%;
-  background: #228B22;
+  font-size: 50px;
+  height:55px;
+  width:980px;
+  background: #005a32;
   opacity: 0.8;
   color:white;
   text-align: center;
-  line-height: 1.3;
-  letter-spacing: 10px;
+  line-height: 1;
+  letter-spacing: 15px;
   text-shadow:3px 2px black;
-  padding: 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
+  display: inline-block;
 }
-
-
-#mapid {
-  height: 400px;
-  width: 79.5%;
-  float: right;
-  /* float: ; */
-  /* display: inline-block; */
-}
-
 
 #contextPanel{
-  height:390px;
-  width:18.5%;
+  height:145px;
+  width:980px;
   font-family: arial;
-  font-size:15px;
+  font-size:13px;
   background: #e5f5e0;
-  float: left;
-  padding: 10px 10px 10px;
+  display: inline-block;
+  padding: 0px 10px 10px 10px;
+}
+
+#mapid {
+  height: 450px;
+  width: 1000px;
+  display: inline-block;
 }
 
 #credits{
   height:100px;
   width: 100%;
   float: bottom-left;
-  font-size:9px;
-  /**/not sure if it's actually changing the color here
-  text-decoration: #bdbdbd;
+  font-size:11px;
 }
 
 
-/* adjusting the size of the popup */
+/* styling containers objects */
+
+/* adjusting the size of the popup country containers */
 .leaflet-popup-content p{
   margin: 0.2em 0;
 }
 
-
-/* sequence */
-/* reference: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
+ /* styling the sequence bar  */
+/* referenced https://www.w3schools.com/ to learn the code for styling*/
 .sequence-control-container{
   width: 190px;
   height:30px;
@@ -102,6 +100,7 @@
   height: auto;
 }
 
+/* positioning icons */
 #forward {
   float: right;
 }
@@ -110,10 +109,6 @@
   float:left;
 }
 
-
-
-/* Legend */
-/* play wtih this */
 .legend-control-container{
   width: 190px;
   height:100px;
